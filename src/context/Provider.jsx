@@ -4,36 +4,36 @@ import fetchPlanetsAPI from '../services/starWarsAPI';
 import Context from './Context';
 
 function Provider({ children }) {
-  const [planetsInfo, setPlanetsInfo] = useState([]);
+  const [planetsInfo, getPlanets] = useState([]);
+  const [filterByName, setFilterByName] = useState({});
 
   useEffect(() => {
-    const getPlanets = async () => {
+    const fetchPlanets = async () => {
       const { results } = await fetchPlanetsAPI();
       const planetsList = results.map((planet) => {
         delete planet.residents;
         return planet;
       });
-      setPlanetsInfo(planetsList);
+      getPlanets(planetsList);
     };
-    getPlanets();
+    fetchPlanets();
   }, []);
 
   const context = {
     planetsInfo,
+    filterByName,
+    setFilterByName,
   };
 
   return (
     <Context.Provider value={ context }>
-      { children }
+      {children}
     </Context.Provider>
   );
 }
 
 Provider.propTypes = {
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]).isRequired,
-};
+  children: PropTypes.node,
+}.isRequired;
 
 export default Provider;
