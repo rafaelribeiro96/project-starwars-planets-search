@@ -2,41 +2,28 @@ import React, { useContext, useEffect, useState } from 'react';
 import Context from '../context/Context';
 
 function Filters() {
-  const { setFilterByName, setFilterByNumbers, filterByNumbers } = useContext(Context);
+  const { addFilterByName, addFilterNumbers, columnFilter,
+    removeAllFilters } = useContext(Context);
   const [filters, setAllFilters] = useState({
     column: 'population', comparison: 'maior que', number: 0,
   });
-  const [columnFilter, setcolumnFilter] = useState([
-    'population', 'orbital_period', 'diameter', 'rotation_period', 'surface_water',
-  ]);
 
-  const handleNumericFilter = ({ target: { name, value } }) => {
+  const handleChange = ({ target: { name, value } }) => {
     setAllFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
 
-  const addNumericFilter = (event) => {
-    event.preventDefault();
-    setFilterByNumbers((prevfilterByNumbers) => [
-      ...prevfilterByNumbers, filters]);
-  };
-
   useEffect(() => {
-    if (filterByNumbers.length) {
-      const newOptions = columnFilter.filter(
-        (option) => filterByNumbers.some(({ column }) => option !== column),
-      );
-      setcolumnFilter(newOptions); setAllFilters((prevFilters) => ({
-        ...prevFilters, column: newOptions[0] }));
-    }
-  }, [filterByNumbers]);
+    setAllFilters((prevFilters) => ({
+      ...prevFilters, column: columnFilter[0] }));
+  }, [columnFilter]);
 
   return (
     <section>
-      <form onSubmit={ addNumericFilter }>
+      <form>
         <input
           type="text"
           data-testid="name-filter"
-          onChange={ ({ target: { value } }) => setFilterByName({ name: value }) }
+          onChange={ ({ target: { value } }) => addFilterByName(value) }
         />
         <label htmlFor="column-filter">
           Filtrar por coluna:
@@ -45,7 +32,7 @@ function Filters() {
             value={ filters.column }
             data-testid="column-filter"
             id="column-filter"
-            onChange={ handleNumericFilter }
+            onChange={ handleChange }
           >
             {columnFilter.map((columnOption) => (
               <option key={ columnOption } value={ columnOption }>{columnOption}</option>
@@ -59,7 +46,7 @@ function Filters() {
             value={ filters.comparison }
             data-testid="comparison-filter"
             id="comparison-filter"
-            onChange={ handleNumericFilter }
+            onChange={ handleChange }
           >
             <option value="maior que">maior que</option>
             <option value="menor que">menor que</option>
@@ -72,9 +59,22 @@ function Filters() {
           name="number"
           data-testid="value-filter"
           value={ filters.number }
-          onChange={ handleNumericFilter }
+          onChange={ handleChange }
         />
-        <button data-testid="button-filter" type="submit">Filtrar</button>
+        <button
+          data-testid="button-filter"
+          type="button"
+          onClick={ () => addFilterNumbers(filters) }
+        >
+          Filtrar
+        </button>
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ removeAllFilters }
+        >
+          Remover filtros
+        </button>
       </form>
     </section>
   );

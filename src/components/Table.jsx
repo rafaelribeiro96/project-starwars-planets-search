@@ -2,7 +2,8 @@ import React, { useContext } from 'react';
 import Context from '../context/Context';
 
 export default function Table() {
-  const { planetsInfo, filterByName, filterByNumbers } = useContext(Context);
+  const { planetsInfo, filterByName,
+    filterByNumbers, removeFilter } = useContext(Context);
 
   const filterNumbersPlanets = (planet, column, comparison, number) => {
     switch (comparison) {
@@ -25,13 +26,9 @@ export default function Table() {
     filterPlanets = filterPlanets.filter((planet) => {
       let value = true;
       filterByNumbers.forEach(({ column, comparison, number }) => {
-        if (planet[column] === 'unknown') {
-          value = false;
-        }
+        if (planet[column] === 'unknown') { value = false; }
         const result = filterNumbersPlanets(planet, column, comparison, number);
-        if (!result) {
-          value = false;
-        }
+        if (!result) { value = false; }
       });
       return value;
     });
@@ -40,8 +37,14 @@ export default function Table() {
   return (
     <section>
       {filterByNumbers.map(({ column, comparison, number }, index) => (
-        <div key={ index }>
+        <div data-testid="filter" key={ index }>
           <p>{`Filtrando se ${column} ${comparison}: ${number}`}</p>
+          <button
+            onClick={ () => removeFilter(index) }
+            type="button"
+          >
+            remover
+          </button>
         </div>
       ))}
 
