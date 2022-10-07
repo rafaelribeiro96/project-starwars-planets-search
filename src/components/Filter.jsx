@@ -19,7 +19,7 @@ function Filters() {
 
   return (
     <section>
-      <form>
+      <form className="filter-css">
         <input
           type="text"
           data-testid="name-filter"
